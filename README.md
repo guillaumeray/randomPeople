@@ -9,6 +9,10 @@ Generate random people
 - [Installation](#installation)
 - [License](#license)
 
+## Access
+
+https://guillaumeray.github.io/randomPeople/
+
 ## Installation
 
 No need of installation
