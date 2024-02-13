@@ -76,14 +76,6 @@
         margin-bottom: 20px;
       }
 
-      .message-link {
-        padding: 10px;
-        background-color: #4caf50;
-        color: #fff;
-        border-radius: 5px;
-        cursor: pointer;
-      }
-
         /* The Modal (background) */
         .modal {
         display: none; /* Hidden by default */
@@ -108,34 +100,40 @@
         width: 80%;
         }
 
-        /* The Close Button */
-        .close {
-        color: #aaaaaa;
-        float: right;
-        font-size: 28px;
-        font-weight: bold;
-        }
-
-        .close:hover,
-        .close:focus {
-        color: #000;
-        text-decoration: none;
-        cursor: pointer;
-        }
-
-      .message-list {
-        max-height: 300px;
-        overflow-y: auto;
-        background-color: #fff;
-        padding: 20px;
-        border-radius: 5px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        .popup {
+          display: none;
+          position: fixed;
+          z-index: 1;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          overflow: auto;
+          background-color: rgba(0,0,0,0.4);
       }
 
-      .message-list p {
-        margin: 0;
-        padding: 5px 0;
+      .popup-content {
+          background-color: #fefefe;
+          margin: 15% auto;
+          padding: 20px;
+          border: 1px solid #888;
+          width: 80%;
       }
+
+      .close {
+          color: #aaa;
+          float: right;
+          font-size: 28px;
+          font-weight: bold;
+      }
+
+      .close:hover,
+      .close:focus {
+          color: black;
+          text-decoration: none;
+          cursor: pointer;
+      }
+
     </style>
   </head>
   <body>
@@ -143,8 +141,53 @@
       <h1>Random people</h1>
 
       <div class="header-bar">
-        <div class="message-link">Messages</div>
+        <button id="openPopup" style="background-color: #4CAF50; /* Green */
+          border: none;
+          color: white;
+          padding: 15px 32px;
+          text-align: center;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 16px;
+          margin: 4px 2px;
+          cursor: pointer;">Messages (Number: <span id="messageLength"></span>)</button>
+
+        <div id="popup" class="popup">
+            <div class="popup-content">
+                <span id="closePopup" class="close">&times;</span>
+                <p>Some random text...</p>
+            </div>
+        </div>
       </div>
+
+      <script>
+
+        async function updateMessageNumber() {
+          var messageLength = document.getElementById("messageLength");
+          messageLength.textContent = document.messages.length;
+          console.log( "YOYO");
+        }
+
+        document.messages = document.messages || [];
+        var popup = document.getElementById('popup');
+        var btn = document.getElementById("openPopup");
+        var span = document.getElementById("closePopup");
+        updateMessageNumber();
+
+        btn.onclick = function() {
+            popup.style.display = "block";
+        }
+
+        span.onclick = function() {
+            popup.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == popup) {
+                popup.style.display = "none";
+            }
+        }
+      </script>
 
       <div class="profile">
         <img
@@ -218,15 +261,20 @@
         const closeMessageLink = document.querySelector(".close-button");
         const popup = document.querySelector(".popup");
 
-        dislikeButton.addEventListener("click", () => {
+        dislikeButton.addEventListener("click", async () => {
           // Perform action when dislike button is clicked
-          getNextProfile();
+          await getNextProfile();
         });
 
-        likeButton.addEventListener("click", () => {
-            // Perform action when like button is clicked
-            getNextProfile();
-            showPopup(profileName.textContent);
+        likeButton.addEventListener("click", async () => {
+          // Perform action when like button is clicked
+          await getNextProfile();
+          var currentProfile = profiles[currentProfileIndex];
+          document.messages.push({
+            name: currentProfile.name,
+            message: "Hello, how are you?",
+          });
+          await updateMessageNumber();
         });
 
         async function getNextProfile() {
@@ -248,7 +296,7 @@
           profileAge.textContent = `Age: ${nextProfile.age}`;
           profileLocation.textContent = `Location: ${nextProfile.location}`;
         }
-
+        
         getNextProfile();
       })();
     </script>
